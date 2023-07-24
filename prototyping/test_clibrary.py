@@ -21,7 +21,8 @@ def wrapper():
 
 def test_get_point(wrapper, capsys):
     wrapper.getPoint.restype = ctypes.POINTER(Point)
-    p = wrapper.getPoint()
+    wrapper.getPoint.argtypes = ctypes.c_int, ctypes.c_int
+    p = wrapper.getPoint(50, 10)
     print(p.contents.x, p.contents.y)
     captured = capsys.readouterr()
     assert captured.out == "50 10\n"
