@@ -10,8 +10,6 @@ class CompilationError(Exception):
 
 def compile_lib(source: Path, cflags=[], ldadd=[]):
     binary = source.with_suffix(".so")
-    print("######" * 5)
-    print(SRC)
     result = run(
         ["gcc", "-shared", *cflags, "-o", str(binary), str(source), *ldadd],
         stdout=PIPE,
