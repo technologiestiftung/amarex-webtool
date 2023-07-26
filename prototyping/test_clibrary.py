@@ -12,18 +12,19 @@ lib = CDLL(lib_filename)
 
 
 @pytest.fixture
-def wrapper():
+def cdll():
     source = SRC / "clibrary.cpp"
     compile_lib(source)
 
     yield CDLL(str(source.with_suffix(".so")))
 
 
-def test_get_point(wrapper, capsys):
-    wrapper.getPoint.restype = ctypes.POINTER(Point)
-    wrapper.getPoint.argtype = ctypes.POINTER(Point)
+def test_get_point(capsys):
+    cdll = lib
+    cdll.getPoint.restype = ctypes.POINTER(Point)
+    cdll.getPoint.argtype = ctypes.POINTER(Point)
     point_a = Point(10, 20)
-    p = wrapper.getPoint(point_a)
+    p = cdll.getPoint(point_a)
 
     # Print point members and assert values are right
     print(p.contents.x, p.contents.y)
