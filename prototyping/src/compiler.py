@@ -1,21 +1,13 @@
-from pathlib import Path
-from subprocess import PIPE, STDOUT, run
-
-SRC = Path(__file__).resolve().parent
+from subprocess import run
 
 
 class CompilationError(Exception):
     pass
 
 
-def compile_lib(source: Path, cflags=[], ldadd=[]):
-    binary = source.with_suffix(".so")
-    result = run(
-        ["gcc", "-shared", *cflags, "-o", str(binary), str(source), *ldadd],
-        stdout=PIPE,
-        stderr=STDOUT,
-        cwd=SRC,
-    )
+def compile_lib():
+    command = "qmake src/clibrary.pro && make"
+    result = run(command, shell=True, check=True)
 
     if result.returncode == 0:
         return

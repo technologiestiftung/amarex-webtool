@@ -3,21 +3,17 @@ from ctypes.util import find_library
 
 import pytest
 
-from src.compiler import compile_lib, SRC
+from src.compiler import compile_lib
 from src.point import get_point
 
 
-# @pytest.fixture
-# def cdll():
-#     source = SRC / "clibrary.cpp"
-#     compile_lib(source)
-#
-#     yield CDLL(str(source.with_suffix(".so")))
+@pytest.fixture
+def cdll():
+    compile_lib()
+    yield CDLL(find_library("clibrary"))
 
 
-def test_get_point(capsys):
-    source = find_library("clibrary")
-    cdll = CDLL(source)
+def test_get_point(cdll, capsys):
 
     input_point = {"x": 10, "y": 20}
     result_point = get_point(cdll, input_point)
