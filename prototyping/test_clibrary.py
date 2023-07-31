@@ -1,32 +1,28 @@
-import ctypes
 from ctypes import CDLL
 from ctypes.util import find_library
 
 import pytest
 
 from src.compiler import compile_lib, SRC
-from src.structs import Point
-
-lib_filename = find_library("clibrary")
-lib = CDLL(lib_filename)
+from src.point import get_point
 
 
-@pytest.fixture
-def cdll():
-    source = SRC / "clibrary.cpp"
-    compile_lib(source)
-
-    yield CDLL(str(source.with_suffix(".so")))
+# @pytest.fixture
+# def cdll():
+#     source = SRC / "clibrary.cpp"
+#     compile_lib(source)
+#
+#     yield CDLL(str(source.with_suffix(".so")))
 
 
 def test_get_point(capsys):
-    cdll = lib
-    cdll.getPoint.restype = ctypes.POINTER(Point)
-    cdll.getPoint.argtype = ctypes.POINTER(Point)
-    point_a = Point(10, 20)
-    p = cdll.getPoint(point_a)
+    source = find_library("clibrary")
+    cdll = CDLL(source)
+
+    input_point = {"x": 10, "y": 20}
+    result_point = get_point(cdll, input_point)
 
     # Print point members and assert values are right
-    print(p.contents.x, p.contents.y)
+    print(result_point["x"], result_point["y"])
     captured = capsys.readouterr()
     assert captured.out == "20 30\n"

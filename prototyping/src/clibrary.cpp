@@ -8,13 +8,15 @@ extern "C" struct Point {
 };
 
 extern "C" struct Point *getPoint(struct Point point_a) {
-    struct Point point_result;          // Initialize variable
-    struct Point *ptr;                  // Initialize pointer to variable
-    ptr = &point_result;                // Store address of variable in pointer
+    struct Point *point_result = new struct Point; // Allocate memory for point_result on the heap
 
-    ptr->x = point_a.x + 10;            // Get x member of variable that ptr points to and assign a value to it
-    ptr->y = point_a.y + 10;            // Get y member of variable that ptr points to and assign a value to it
-    return ptr;
+    point_result->x = point_a.x + 10;
+    point_result->y = point_a.y + 10;
+    return point_result;
+}
+
+extern "C" void deletePoint(struct Point *point) {
+    delete point; // Free the allocated memory for the Point struct
 }
 
 extern "C" void printPoint(struct Point p) {
