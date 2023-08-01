@@ -19,11 +19,11 @@ def get_point(cdll, input_point):
     cdll.getPoint.argtypes = (Point,)
 
     # Calculate with getPoint and save results
-    c_point_a = Point(input_point["x"], input_point["y"])
-    c_point_result = cdll.getPoint(c_point_a)
-    result_point = {"x": c_point_result.contents.x, "y": c_point_result.contents.y}
+    input_point = Point(input_point["x"], input_point["y"])
+    c_result_point = cdll.getPoint(input_point)
+    result_point = {"x": c_result_point.contents.x, "y": c_result_point.contents.y}
 
     # Deallocate memory in C++
-    cdll.deletePoint(c_point_result)
+    cdll.deletePoint(c_result_point)
 
     return result_point

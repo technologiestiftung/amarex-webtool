@@ -7,13 +7,13 @@ extern "C" struct Point {
     int y;
 };
 
-extern "C" struct Point *getPoint(QVector<struct Point> point_input) {
+extern "C" struct Point *getPoint(QVector<struct Point>& input_point) {
 
-    struct Point *point_result = new struct Point; // Allocate memory for point_result on the heap
+    struct Point *result_point = new struct Point; // Allocate memory for point_result on the heap
 
-    point_result->x = point_input.at(0).x + 10;
-    point_result->y = point_input.at(0).y + 10;
-    return point_result;
+    result_point->x = input_point.at(0).x + 10;
+    result_point->y = input_point.at(0).y + 10;
+    return result_point;
 }
 
 extern "C" void deletePoint(struct Point *point) {
