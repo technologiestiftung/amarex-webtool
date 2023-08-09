@@ -61,6 +61,41 @@ extern "C" void deletePointVector(QVector<Point>* pointVector) {
 }
 
 /**
+ *Transform a 2D array of integers into a QVector of Points.
+ */
+extern "C" QVector<Point>* array2Vector(int array[][2], int numRows){
+    QVector<Point>* pointVector = createPointVector();
+    for (int i = 0; i < numRows; i++) {
+        int* row = array[i];
+        Point* point = createPoint(row[0], row[1]);
+        addPointToVector(pointVector, point);
+        deletePoint(point);
+    }
+    return pointVector;
+}
+
+/**
+ *Transform a QVector of Points into a 2D array.
+ */
+extern "C" int** vector2Array(QVector<Point>* pointVector, int* numRows) {
+    *numRows = pointVector->size();
+
+    // Allocate an array of pointers for the rows
+    int** array = new int*[*numRows];
+
+    for (int i = 0; i < *numRows; i++) {
+        // Allocate memory for each row
+        array[i] = new int[2];
+
+        Point point = pointVector->at(i);
+        array[i][0] = point.x;
+        array[i][1] = point.y;
+    }
+
+    return array;
+}
+
+/**
  *Perform some calculations on an input QVector containing Points
  *and return the resulting points in an output QVector.
  */
@@ -79,4 +114,27 @@ extern "C" QVector<Point>* processPointVector(
 
 int main() {
     return 0;
+}
+
+/**
+ *Perform some calculations on an input array containing Points
+ *and return the resulting points in an output array.
+ *Internally, this function processes the arrays as QVectors.
+ */
+extern "C" int** processInput(int array[][2], int numRows) {
+    // Transform array to vector
+    QVector<Point>* inputVector = array2Vector(array, numRows);
+
+    // Perform calculations
+    QVector<Point>* outputVector = createPointVector();
+    outputVector = processPointVector(inputVector, outputVector);
+
+    // Transform vector to array
+    int** outputArray = vector2Array(outputVector, &numRows);
+
+    // Clean memory for vectors that we no longer need
+    deletePointVector(inputVector);
+    deletePointVector(outputVector);
+
+    return outputArray;
 }
