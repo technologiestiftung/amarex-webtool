@@ -138,3 +138,21 @@ extern "C" int** processInput(int array[][2], int numRows) {
 
     return outputArray;
 }
+
+/**
+ *Perform some calculations on an input array containing Points.
+ *Do not return anything, this function is just for testing the performance
+ *when there is no vector to array conversion.
+ */
+extern "C" void processInputWithoutReturn(int array[][2], int numRows) {
+    // Transform array to vector
+    QVector<Point>* inputVector = array2Vector(array, numRows);
+
+    // Perform calculations
+    QVector<Point>* outputVector = createPointVector();
+    outputVector = processPointVector(inputVector, outputVector);
+
+    // Clean memory for vectors that we no longer need
+    deletePointVector(inputVector);
+    deletePointVector(outputVector);
+}

@@ -1,3 +1,3 @@
 TEMPLATE = lib
 QT += core
-SOURCES += clibrary.cpp
+SOURCES += option_1.cpp
