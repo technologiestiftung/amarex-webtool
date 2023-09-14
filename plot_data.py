@@ -18,7 +18,7 @@ class Plotter:
         zip_contents = zipfile.ZipFile(map_path)
         zip_contents.extractall()
         dbf, prj, shp, shx = [f for f in sorted(zip_contents.namelist()) for ending in
-                              ['dbf', 'prj', 'shp', 'shx'] if f.endswith(ending)]
+                              ["dbf", "prj", "shp", "shx"] if f.endswith(ending)]
 
         map_base = gpd.read_file(shp)
 
@@ -30,10 +30,32 @@ class Plotter:
 
         :param data_path: str, path to the DBF file containing the data to plot
         """
-        # Convert DBF file to Pandas dataframe
+        # Convert DBF file to Pandas DataFrame
         data = gpd.read_file(data_path).drop("geometry", axis=1)
 
         return data
+
+    def plot(self, var, map_base, data):
+        """
+        Plot choropleth map.
+
+        :param var: str, variable to plot.
+        """
+        var_codes = {
+            "Oberflächenabfluss": "ROW",
+            "Versickerung": "RI",
+            "Verdunstung": "VERDUNSTUN",
+            "Delta": "DEV"
+        }
+
+        merged_df = map_base.set_index("SCHLUESSEL").join(data.set_index("CODE"))
+        merged_df.plot(column=var_codes[var], legend=True)  # Plot evaporation
+
+        # Style the plot
+        plt.title(f"{var}")
+        plt.axis("off")
+
+        plt.show()
 
     def calculate_deviation(self, data, data_ref):
         """
@@ -55,28 +77,6 @@ class Plotter:
 
         return data
 
-    def plot(self, var, map_base, data):
-        """
-        Plot choropleth map.
-
-        :param var: str, variable to plot.
-        """
-        var_codes = {
-            "surface_runoff": "ROW",
-            "infiltration": "RI",
-            "evaporation": "VERDUNSTUN",
-            "deviation": "DEV"
-        }
-
-        merged_df = map_base.set_index("SCHLUESSEL").join(data.set_index("CODE"))
-        merged_df.plot(column=var_codes[var], legend=True)  # Plot evaporation
-
-        # Style the plot
-        plt.title(f"{var}")
-        plt.axis("off")
-
-        plt.show()
-
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -87,7 +87,7 @@ if __name__ == "__main__":
     parser.add_argument("data_path", help="Path to the DBF file containing the data to plot")
     parser.add_argument("data_ref_path", help="Path to the DBF file containing the reference data")
     parser.add_argument("var",
-                        choices=["surface_runoff", "infiltration", "evaporation", "deviation"],
+                        choices=["Oberflächenabfluss", "Versickerung", "Verdunstung", "Delta"],
                         help="Variable to plot")
 
     args = parser.parse_args()
