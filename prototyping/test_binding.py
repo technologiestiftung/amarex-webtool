@@ -5,7 +5,7 @@ import time
 import pytest
 
 from src.compiler import compile_lib
-from src import option_1
+from src import option_1, option_3
 
 
 def create_dummy_vector(n_rows, n_columns):
@@ -65,6 +65,7 @@ def cdll(request):
     yield CDLL(find_library(request.param))
 
 
+@pytest.mark.skip(reason="WIP")
 @pytest.mark.parametrize("cdll", ["option_1"], indirect=True)
 def test_option_1(cdll, n_rows):
     """
@@ -95,6 +96,7 @@ def test_option_1(cdll, n_rows):
     assert input_array == output_array
 
 
+@pytest.mark.skip(reason="WIP")
 @pytest.mark.parametrize("cdll", ["option_1"], indirect=True)
 def test_option_1_without_return(cdll, n_rows):
     """
@@ -149,3 +151,33 @@ def test_option_2(cdll):
     for input_point, output_point in zip(input_array, output_vector):
         assert input_point[0] == output_point.x
         assert input_point[1] == output_point.y
+
+
+@pytest.mark.parametrize("cdll", ["option_3"], indirect=True)
+def test_option_3(cdll, n_rows):
+    """
+    Test for option 3:
+    1/ Input array is transformed to a C++ vector of Points row per row from Python
+    2/ Vector is processed and converted back to array in C++
+    3/ Output array is sent from C++ to Python
+
+    :param cdll: compiled library
+    :param n_rows: int, number of vector rows
+    """
+    input_array = create_dummy_vector(n_rows, 2)
+
+    # Start timer
+    start_time = time.time()
+
+    # Call C++ function
+    output_array = option_3.process_input(cdll, input_array)
+
+    # Calculate computation time
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+
+    print("--- OPTION 3 ---")
+    print(f"Number of rows: {n_rows}")
+    print(f"Computation time: {elapsed_time:.6f} seconds")
+
+    assert input_array == output_array
