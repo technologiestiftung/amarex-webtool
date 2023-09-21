@@ -6,8 +6,6 @@ import os
 import random
 
 
-# TODO: I think the C++ classes AbimoInputRecord and AbimoOutputRecord should be structs for this to work
-#   See https://coderslegacy.com/structs-with-python-ctypes/
 class AbimoInputRecord(ctypes.Structure):
     """
     Struct for C++ class AbimoInputRecord.
@@ -31,13 +29,7 @@ class AbimoInputRecord(ctypes.Structure):
         ("unbuiltSealedFractionSurface", ctypes.c_float),
         ("roadSealedFractionSurface", ctypes.c_float),
         ("mainArea", ctypes.c_float),
-        ("roadArea", ctypes.c_float),
-        ("totalArea_FLAECHE", ctypes.c_float),
-        ("areaFractionMain", ctypes.c_float),
-        ("areaFractionRoad", ctypes.c_float),
-        ("fractionOfTotalArea", ctypes.c_float),
-        ("mainPercentageSealed", ctypes.c_float),
-        ("yearlyHeightToVolumeFlow", ctypes.c_float)
+        ("roadArea", ctypes.c_float)
     ]
 
 
