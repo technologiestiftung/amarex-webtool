@@ -1,4 +1,4 @@
-from ctypes import CDLL, c_int, c_void_p, POINTER
+from ctypes import CDLL, c_int, c_void_p, POINTER, pointer
 from ctypes.util import find_library
 import os
 import time
@@ -6,7 +6,7 @@ import time
 import pytest
 
 from compiler import compile_lib
-from read_dbf import read_file, to_abimo_array
+from read_dbf import read_file, to_abimo_array, AbimoInputRecordStruct
 
 
 @pytest.fixture
@@ -33,22 +33,18 @@ def test_read_dbf(cdll):
     start_time = time.time()
 
     df = read_file()
-    abimo_array, shape = to_abimo_array(df)
+    records, records_n = to_abimo_array(df)
 
-    # TODO: Have to specify the right type here
-    #cdll.array2AbimoInputVector.argtypes = []
-    #cdll.array2AbimoInputVector.restype = POINTER(c_int)
+    cdll.array2AbimoInputVector.argtypes = [POINTER(AbimoInputRecordStruct), c_int]
+    cdll.array2AbimoInputVector.restype = c_void_p
 
-    # TODO: Might have to do some additional conversions here, check option 1 in branch wrapper_prototyping
-    #   where I pass the first argument input_array_flat like this: (c_int * len(input_array_flat))(*input_array_flat)
-    abimo_input_vector = cdll.array2AbimoInputVector(abimo_array, shape[0])
+    abimo_input_vector = cdll.array2AbimoInputVector(pointer(records[0]), records_n)
 
     # Calculate computation time
     end_time = time.time()
     elapsed_time = end_time - start_time
 
     print("--- OPTION 1 ---")
-    print(f"Number of rows: {shape[0]}")
     print(f"Computation time: {elapsed_time:.6f} seconds")
 
     # TODO: Add assertions

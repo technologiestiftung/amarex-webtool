@@ -1,5 +1,37 @@
+import ctypes
 import geopandas as gpd
-import pandas as pd
+
+
+# Define the struct for AbimoInputRecordBinding
+class AbimoInputRecordStruct(ctypes.Structure):
+    _fields_ = [
+        ("usage", ctypes.c_int),
+        ("code", ctypes.c_char_p),
+        ("precipitationYear", ctypes.c_int),
+        ("precipitationSummer", ctypes.c_int),
+        ("depthToWaterTable", ctypes.c_float),
+        ("type", ctypes.c_int),
+        ("fieldCapacity_30", ctypes.c_int),
+        ("fieldCapacity_150", ctypes.c_int),
+        ("district", ctypes.c_int),
+        ("mainFractionBuiltSealed", ctypes.c_float),
+        ("mainFractionUnbuiltSealed", ctypes.c_float),
+        ("roadFractionSealed", ctypes.c_float),
+        ("builtSealedFractionConnected", ctypes.c_float),
+        ("unbuiltSealedFractionConnected", ctypes.c_float),
+        ("unbuiltSealedFractionConnected", ctypes.c_float),
+        ("roadSealedFractionConnected", ctypes.c_float),
+        ("BELAG1", ctypes.c_float),
+        ("BELAG2", ctypes.c_float),
+        ("BELAG3", ctypes.c_float),
+        ("BELAG4", ctypes.c_float),
+        ("STR_BELAG1", ctypes.c_float),
+        ("STR_BELAG2", ctypes.c_float),
+        ("STR_BELAG3", ctypes.c_float),
+        ("STR_BELAG4", ctypes.c_float),
+        ("mainArea", ctypes.c_float),
+        ("roadArea", ctypes.c_float),
+    ]
 
 
 def read_file():
@@ -81,17 +113,43 @@ def to_abimo_array(df):
     columns_to_keep = list(mapping.values())
     abimo_df = df_renamed[columns_to_keep]
 
-    # Convert DataFrame to array
-    abimo_array = abimo_df.values.tolist()
+    # Create an array to hold the AbimoInputRecord objects
+    records = []
 
-    # Flatten the array
-    abimo_array_flat = [col for row in abimo_array
-                            for col in row]
+    # Iterate over DataFrame rows and create AbimoInputRecord objects
+    for index, row in abimo_df.iterrows():
+        record = AbimoInputRecordStruct(
+            usage=row["usage"],
+            code=row["code"].encode("utf-8"),
+            precipitationYear=row["precipitationYear"],
+            precipitationSummer=row["precipitationSummer"],
+            depthToWaterTable=row["depthToWaterTable"],
+            type=row["type"],
+            fieldCapacity_30=row["fieldCapacity_30"],
+            fieldCapacity_150=row["fieldCapacity_150"],
+            district=row["district"],
+            mainFractionBuiltSealed=row["mainFractionBuiltSealed"],
+            mainFractionUnbuiltSealed=row["mainFractionUnbuiltSealed"],
+            roadFractionSealed=row["roadFractionSealed"],
+            builtSealedFractionConnected=row["builtSealedFractionConnected"],
+            unbuiltSealedFractionConnected=row["unbuiltSealedFractionConnected"],
+            roadSealedFractionConnected=row["roadSealedFractionConnected"],
+            BELAG1=row["BELAG1"],
+            BELAG2=row["BELAG2"],
+            BELAG3=row["BELAG3"],
+            BELAG4=row["BELAG4"],
+            STR_BELAG1=row["STR_BELAG1"],
+            STR_BELAG2=row["STR_BELAG2"],
+            STR_BELAG3=row["STR_BELAG3"],
+            STR_BELAG4=row["STR_BELAG4"],
+            mainArea=row["mainArea"],
+            roadArea=row["roadArea"],
+        )
+        records.append(record)
 
-    # Get the number of rows and columns
-    shape = abimo_df.shape
+    records_n = abimo_df.shape[0]
 
-    return abimo_array_flat, shape
+    return records, records_n
 
 
 def to_float_fraction(value):
@@ -103,8 +161,3 @@ def to_float_fraction(value):
     :return: float, value as fraction
     """
     return float(value) / 100.0
-
-
-# TODO: Delete later, just for testing
-df = read_file()
-abimo_array, shape = to_abimo_array(df)
