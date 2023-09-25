@@ -44,7 +44,7 @@ def test_read_dbf(cdll):
     end_time = time.time()
     elapsed_time = end_time - start_time
 
-    print("--- OPTION 1 ---")
+    print(f"Number of records: {records_n}")
     print(f"Computation time: {elapsed_time:.6f} seconds")
 
     # TODO: Add assertions
