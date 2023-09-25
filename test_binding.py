@@ -14,15 +14,13 @@ def cdll():
     """
     Fixture for the compilation of a C++ library.
     """
-    #project_filename = "src/app/app"
-    #compile_lib(project_filename)
+    project_path = "/Users/guadaluperomero/ProjectsTSB/amarex/abimo"
+    compile_lib(project_path)
 
-    # TODO: Delete after qt@5 fix
-    #   Here I am using a library that was already compiled
-    os.chdir("/Users/guadaluperomero/ProjectsTSB/amarex/amarex-webtool/release")
-    project_filename = "myAbimo"
+    os.chdir(f"{project_path}/release")
+    compiled_lib = CDLL(find_library("myAbimo"))
 
-    yield CDLL(find_library(project_filename))
+    yield compiled_lib
 
 
 def test_read_dbf(cdll):
@@ -39,7 +37,7 @@ def test_read_dbf(cdll):
 
     # TODO: Have to specify the right type here
     #cdll.array2AbimoInputVector.argtypes = []
-    cdll.array2AbimoInputVector.restype = POINTER(c_int)
+    #cdll.array2AbimoInputVector.restype = POINTER(c_int)
 
     # TODO: Might have to do some additional conversions here, check option 1 in branch wrapper_prototyping
     #   where I pass the first argument input_array_flat like this: (c_int * len(input_array_flat))(*input_array_flat)
