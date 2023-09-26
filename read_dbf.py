@@ -2,8 +2,8 @@ import ctypes
 import geopandas as gpd
 
 
-# Define the struct for AbimoInputRecordBinding
-class AbimoInputRecordStruct(ctypes.Structure):
+# Define the struct for AbimoInputRecord
+class AbimoInputRecord(ctypes.Structure):
     _fields_ = [
         ("usage", ctypes.c_int),
         ("code", ctypes.c_char_p),
@@ -31,6 +31,21 @@ class AbimoInputRecordStruct(ctypes.Structure):
         ("STR_BELAG4", ctypes.c_float),
         ("mainArea", ctypes.c_float),
         ("roadArea", ctypes.c_float),
+    ]
+
+
+# Define the struct for AbimoOutputRecord
+class AbimoOutputRecord(ctypes.Structure):
+    _fields_ = [
+        ("code_CODE", ctypes.c_char_p),
+        ("totalRunoff_R", ctypes.c_float),
+        ("surfaceRunoff_ROW", ctypes.c_float),
+        ("infiltration_RI", ctypes.c_float),
+        ("totalRunoffFlow_RVOL", ctypes.c_float),
+        ("surfaceRunoffFlow_ROWVOL", ctypes.c_float),
+        ("infiltrationFlow_RIVOL", ctypes.c_float),
+        ("totalArea_FLAECHE", ctypes.c_float),
+        ("evaporation_VERDUNSTUN", ctypes.c_float),
     ]
 
 
@@ -118,7 +133,7 @@ def to_abimo_array(df):
 
     # Iterate over DataFrame rows and create AbimoInputRecord objects
     for index, row in abimo_df.iterrows():
-        record = AbimoInputRecordStruct(
+        record = AbimoInputRecord(
             usage=row["usage"],
             code=row["code"].encode("utf-8"),
             precipitationYear=row["precipitationYear"],
